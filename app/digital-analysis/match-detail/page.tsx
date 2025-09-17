@@ -1,6 +1,7 @@
-'use client'
+'use client';
+export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // Mock match data
@@ -42,7 +43,7 @@ const mockMatches = {
   }
 }
 
-export default function MatchDetailPage() {
+function MatchDetailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const matchId = searchParams.get('id') || '1'
@@ -499,5 +500,13 @@ export default function MatchDetailPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function MatchDetailPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <MatchDetailContent />
+    </Suspense>
   )
 }

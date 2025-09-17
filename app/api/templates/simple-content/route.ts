@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // Simple template content API
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'

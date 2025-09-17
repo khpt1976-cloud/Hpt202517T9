@@ -191,7 +191,14 @@ export default function ReportEditorPage() {
   const [imagePagesConfig, setImagePagesConfig] = useState<Record<number, { 
     imagesPerPage: number; 
     imagesPerRow: number; 
-    images: string[] 
+    images: string[];
+    // ✅ THÊM: Lưu trữ cấu hình riêng cho từng trang
+    marginLeft?: number;
+    marginRight?: number;
+    marginBottom?: number;
+    marginHeader?: number;
+    imageAspectRatio?: string;
+    centerHorizontally?: boolean;
   }>>({})
 
   // ✅ Refs để access state mới nhất trong callbacks
@@ -363,7 +370,14 @@ export default function ReportEditorPage() {
                   7: {
                     imagesPerPage: 20,
                     imagesPerRow: 4,
-                    images: Array(20).fill(null)
+                    images: Array(20).fill(null),
+                    // ✅ THÊM CẤU HÌNH MẶC ĐỊNH CHO TRANG 7
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginBottom: 10,
+                    marginHeader: 45,
+                    imageAspectRatio: "4:3",
+                    centerHorizontally: false
                   }
                 }
               }
@@ -392,7 +406,14 @@ export default function ReportEditorPage() {
         7: {
           imagesPerPage: 20,
           imagesPerRow: 4,
-          images: Array(20).fill(null)
+          images: Array(20).fill(null),
+          // ✅ THÊM CẤU HÌNH MẶC ĐỊNH CHO TRANG 7
+          marginLeft: 10,
+          marginRight: 10,
+          marginBottom: 10,
+          marginHeader: 45,
+          imageAspectRatio: "4:3",
+          centerHorizontally: false
         }
       }))
     } else {
@@ -1888,7 +1909,14 @@ export default function ReportEditorPage() {
         updatedImagePagesConfig[pageData.pageNumber] = {
           imagesPerPage: pageData.imagesPerPage,
           imagesPerRow: pageData.imagesPerRow,
-          images: pageData.images
+          images: pageData.images,
+          // ✅ LỰU CẤU HÌNH RIÊNG CHO TỪNG TRANG
+          marginLeft: marginLeft,
+          marginRight: marginRight,
+          marginBottom: marginBottom,
+          marginHeader: marginHeader,
+          imageAspectRatio: imageAspectRatio,
+          centerHorizontally: centerHorizontally
         }
         console.log(`🖼️ Set imagePagesConfig for page ${pageData.pageNumber}:`, updatedImagePagesConfig[pageData.pageNumber])
       })
@@ -3508,7 +3536,14 @@ export default function ReportEditorPage() {
             updated[pageNumber] = {
               imagesPerPage: imagesPerPage,
               imagesPerRow: imagesPerRow,
-              images: Array(imagesPerPage).fill(null)
+              images: Array(imagesPerPage).fill(null),
+              // ✅ THÊM CẤU HÌNH MẶC ĐỊNH
+              marginLeft: marginLeft,
+              marginRight: marginRight,
+              marginBottom: marginBottom,
+              marginHeader: marginHeader,
+              imageAspectRatio: imageAspectRatio,
+              centerHorizontally: centerHorizontally
             }
           }
           updated[pageNumber].images[slotIndex] = imageData
@@ -3520,7 +3555,14 @@ export default function ReportEditorPage() {
         const updatedPageConfig = {
           imagesPerPage: imagesPerPage,
           imagesPerRow: imagesPerRow,
-          images: Array(imagesPerPage).fill(null)
+          images: Array(imagesPerPage).fill(null),
+          // ✅ THÊM CẤU HÌNH MẶC ĐỊNH
+          marginLeft: marginLeft,
+          marginRight: marginRight,
+          marginBottom: marginBottom,
+          marginHeader: marginHeader,
+          imageAspectRatio: imageAspectRatio,
+          centerHorizontally: centerHorizontally
         }
         
         // Get existing images if any
@@ -4029,12 +4071,12 @@ export default function ReportEditorPage() {
                 imagesPerPage={imagePagesConfig[currentPage].imagesPerPage}
                 imagesPerRow={imagePagesConfig[currentPage].imagesPerRow}
                 images={imagePagesConfig[currentPage].images}
-                marginLeft={marginLeft}
-                marginRight={marginRight}
-                marginBottom={marginBottom}
-                marginHeader={marginHeader}
-                aspectRatio={imageAspectRatio}
-                centerHorizontally={centerHorizontally}
+                marginLeft={imagePagesConfig[currentPage].marginLeft || marginLeft}
+                marginRight={imagePagesConfig[currentPage].marginRight || marginRight}
+                marginBottom={imagePagesConfig[currentPage].marginBottom || marginBottom}
+                marginHeader={imagePagesConfig[currentPage].marginHeader || marginHeader}
+                aspectRatio={imagePagesConfig[currentPage].imageAspectRatio || imageAspectRatio}
+                centerHorizontally={imagePagesConfig[currentPage].centerHorizontally || centerHorizontally}
                 onImageChange={(slotIndex, imageData) => {
                   console.log(`🖼️ Image changed: page ${currentPage}, slot ${slotIndex}`)
                   
@@ -4045,7 +4087,14 @@ export default function ReportEditorPage() {
                       updated[currentPage] = {
                         imagesPerPage: 4,
                         imagesPerRow: 2,
-                        images: Array(4).fill(null)
+                        images: Array(4).fill(null),
+                        // ✅ THÊM CẤU HÌNH MẶC ĐỊNH KHI TẠO MỚI
+                        marginLeft: marginLeft,
+                        marginRight: marginRight,
+                        marginBottom: marginBottom,
+                        marginHeader: marginHeader,
+                        imageAspectRatio: imageAspectRatio,
+                        centerHorizontally: centerHorizontally
                       }
                     }
                     updated[currentPage].images[slotIndex] = imageData

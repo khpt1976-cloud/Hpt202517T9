@@ -1,0 +1,321 @@
+// =====================================================
+// PRISMA SCHEMA FOR CONSTRUCTION DIARY MANAGEMENT
+// Structure: Projects → Constructions → Categories → Reports
+// =====================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// =====================================================
+// MAIN ENTITIES
+// =====================================================
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  manager     String?
+  status      Status   @default(ACTIVE)
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  budget      Float?
+  location    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  constructions Construction[]
+
+  @@map("projects")
+}
+
+model Construction {
+  id                  String   @id @default(cuid())
+  projectId           String   @map("project_id")
+  name                String
+  description         String?
+  location            String?
+  manager             String?
+  status              Status   @default(ACTIVE)
+  startDate           DateTime? @map("start_date")
+  endDate             DateTime? @map("end_date")
+  progressPercentage  Int      @default(0) @map("progress_percentage")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  categories Category[]
+
+  @@map("constructions")
+}
+
+model Category {
+  id             String   @id @default(cuid())
+  constructionId String   @map("construction_id")
+  name           String
+  description    String?
+  contractor     String?
+  contractValue  Float?   @map("contract_value")
+  status         Status   @default(ACTIVE)
+  startDate      DateTime? @map("start_date")
+  endDate        DateTime? @map("end_date")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  construction Construction @relation(fields: [constructionId], references: [id], onDelete: Cascade)
+  reports      Report[]
+
+  @@map("categories")
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  categoryId     String       @map("category_id")
+  name           String
+  reportDate     DateTime     @map("report_date")
+  weather        String?
+  temperature    String?
+  content        Json?        // JSONB equivalent
+  templateConfig Json?        @map("template_config")
+  imageConfig    Json?        @map("image_config")
+  documentUrl    String?      @map("document_url")
+  pdfUrl         String?      @map("pdf_url")
+  isShared       Boolean      @default(false) @map("is_shared")
+  sharedType     SharedType   @default(PRIVATE) @map("shared_type")
+  sharedUrl      String?      @map("shared_url")
+  status         ReportStatus @default(DRAFT)
+  createdBy      String?      @map("created_by")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  category    Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  pages       ReportPage[]
+  images      ReportImage[]
+  permissions ReportPermission[]
+
+  @@map("reports")
+}
+
+model ReportPage {
+  id         String   @id @default(cuid())
+  reportId   String   @map("report_id")
+  pageNumber Int      @map("page_number")
+  pageType   PageType @map("page_type")
+  content    Json?
+  isLocked   Boolean  @default(false) @map("is_locked")
+  lockedBy   String?  @map("locked_by")
+  lockedAt   DateTime? @map("locked_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  report Report        @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  images ReportImage[]
+
+  @@unique([reportId, pageNumber])
+  @@map("report_pages")
+}
+
+model ReportImage {
+  id               String   @id @default(cuid())
+  reportId         String   @map("report_id")
+  pageId           String?  @map("page_id")
+  imageUrl         String   @map("image_url")
+  thumbnailUrl     String?  @map("thumbnail_url")
+  originalFilename String?  @map("original_filename")
+  fileSize         Int?     @map("file_size")
+  positionIndex    Int?     @map("position_index")
+  description      String?
+  uploadedBy       String?  @map("uploaded_by")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  report Report      @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  page   ReportPage? @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@map("report_images")
+}
+
+model TemplateFile {
+  id         String       @id @default(cuid())
+  name       String
+  fileUrl    String       @map("file_url")
+  fileType   TemplateType @map("file_type")
+  pageCount  Int?         @map("page_count")
+  fileSize   Int?         @map("file_size")
+  uploadedBy String?      @map("uploaded_by")
+  isDefault  Boolean      @default(false) @map("is_default")
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  @@map("template_files")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  fullName     String?   @map("full_name")
+  role         UserRole  @default(EDITOR)
+  avatarUrl    String?   @map("avatar_url")
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLogin    DateTime? @map("last_login")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  permissions ReportPermission[]
+  activities  ActivityLog[]
+
+  @@map("users")
+}
+
+model ReportPermission {
+  id             String         @id @default(cuid())
+  reportId       String         @map("report_id")
+  userId         String         @map("user_id")
+  permissionType PermissionType @map("permission_type")
+  grantedBy      String?        @map("granted_by")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reportId, userId])
+  @@map("report_permissions")
+}
+
+model ActivityLog {
+  id           String       @id @default(cuid())
+  userId       String?      @map("user_id")
+  action       ActionType
+  resourceType ResourceType @map("resource_type")
+  resourceId   String       @map("resource_id")
+  details      Json?
+  ipAddress    String?      @map("ip_address")
+  userAgent    String?      @map("user_agent")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("activity_logs")
+}
+
+model GlobalSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("global_settings")
+}
+
+model DataConfiguration {
+  id        String   @id @default(cuid())
+  name      String
+  region    String
+  country   String
+  league    String
+  startDate String?  @map("start_date")
+  endDate   String?  @map("end_date")
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("data_configurations")
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum Status {
+  ACTIVE
+  COMPLETED
+  PAUSED
+
+  @@map("status")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  EDITOR
+  VIEWER
+
+  @@map("user_role")
+}
+
+enum SharedType {
+  PRIVATE
+  MEMBERS
+  PUBLIC
+
+  @@map("shared_type")
+}
+
+enum ReportStatus {
+  DRAFT
+  COMPLETED
+  ARCHIVED
+
+  @@map("report_status")
+}
+
+enum PageType {
+  TEMPLATE_INITIAL
+  TEMPLATE_DAILY
+  IMAGE_PAGE
+  CUSTOM
+
+  @@map("page_type")
+}
+
+enum TemplateType {
+  INITIAL
+  DAILY
+
+  @@map("template_type")
+}
+
+enum PermissionType {
+  VIEW
+  EDIT
+  ADMIN
+
+  @@map("permission_type")
+}
+
+enum ActionType {
+  CREATE
+  UPDATE
+  DELETE
+  SHARE
+  LOCK
+  UNLOCK
+
+  @@map("action_type")
+}
+
+enum ResourceType {
+  PROJECT
+  CONSTRUCTION
+  CATEGORY
+  REPORT
+  PAGE
+
+  @@map("resource_type")
+}

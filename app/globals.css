@@ -1,0 +1,371 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import aspect ratio utilities */
+@import '../styles/aspect-ratio.css';
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.205 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.205 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.205 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.205 0 0);
+  --input: oklch(0.205 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.145 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.205 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.205 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Hide toast viewport by default */
+[data-radix-toast-viewport] {
+  display: none !important;
+}
+
+/* Optional: Add a class to show toasts when needed */
+.show-toasts [data-radix-toast-viewport] {
+  display: flex !important;
+}
+
+/* Hide any stray input elements that might cause visual issues */
+input[type="file"] {
+  display: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* Prevent any red debug elements from showing */
+div[style*="background: red"],
+div[style*="background-color: red"],
+div[style*="background: #ff0000"],
+div[style*="background-color: #ff0000"],
+div[style*="background:red"],
+div[style*="background-color:#ff0000"],
+div[style*="background:#ff0000"],
+*[style*="background: rgb(255, 0, 0)"],
+*[style*="background-color: rgb(255, 0, 0)"],
+*[style*="background: rgba(255, 0, 0"],
+*[style*="background-color: rgba(255, 0, 0"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+}
+
+/* Hide any fixed/absolute positioned red elements */
+div[style*="position: fixed"][style*="red"],
+div[style*="position: absolute"][style*="red"],
+div[style*="z-index"][style*="red"] {
+  display: none !important;
+}
+
+/* Hide any elements with red background at bottom right */
+*[style*="bottom: 0"][style*="right: 0"][style*="red"],
+*[style*="position: fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
+}
+
+/* Screen display: Ensure image slots respect aspect ratio */
+@media screen {
+  .image-slot {
+    /* Ensure the inline styles from React take precedence */
+    width: var(--cell-width) !important;
+    height: var(--cell-height) !important;
+    /* Don't force square aspect ratio */
+    aspect-ratio: unset !important;
+  }
+}
+
+/* A4 Page Styling - Đảm bảo nền trắng A4 luôn hiển thị đúng */
+.a4-page-container {
+  background: #f5f5f5 !important; /* Nền xám nhạt cho khu vực xung quanh */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.a4-page {
+  width: 210mm !important;
+  max-width: 210mm !important;
+  min-height: 297mm !important;
+  background: white !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  margin: 0 auto !important;
+  position: relative;
+}
+
+/* Đảm bảo TinyMCE và ImageGrid có nền trong suốt */
+.image-grid-container,
+.tox-tinymce {
+  background: transparent !important;
+}
+
+.tox .tox-edit-area {
+  background: transparent !important;
+}
+
+.tox .tox-edit-area__iframe {
+  background: transparent !important;
+}
+
+/* Print styles for construction reports */
+@media print {
+  /* Hide screen-only elements */
+  .no-print, .screen-only {
+    display: none !important;
+  }
+  
+  /* FORCE SHOW images in print - Override all hiding */
+  img {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    /* Force print images with data URLs */
+    -webkit-filter: none !important;
+    filter: none !important;
+  }
+  
+  /* Image containers for print - FORCE VISIBLE */
+  .image-slot {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    border: 2px solid #22c55e !important; /* Green border like original */
+    border-radius: 8px !important;
+    overflow: visible !important;
+    position: relative !important;
+    /* Respect aspect ratio - don't force square dimensions */
+    width: auto !important;
+    height: auto !important;
+    /* Remove min-size constraints that force square shapes */
+    min-height: 20mm !important; /* Reduced minimum for aspect ratio flexibility */
+    min-width: 20mm !important;
+  }
+  
+  /* Image slot with images - show green border */
+  .image-slot:has(img) {
+    border: 2px solid #22c55e !important; /* Green border for images */
+    background: #f0f9ff !important;
+  }
+  
+  /* Empty image slots - show dashed border */
+  .image-slot:not(:has(img)) {
+    border: 2px dashed #3b82f6 !important; /* Blue dashed border for empty slots */
+    background: #f8fafc !important;
+    /* Hide empty slots in print to save space */
+    display: none !important;
+  }
+  
+  .image-slot img {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    /* Force high quality print */
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    /* Prevent image clipping */
+    clip: auto !important;
+    clip-path: none !important;
+  }
+  
+  /* Fix image grid layout for A4 */
+  .image-grid-container {
+    width: 100% !important;
+    max-width: 180mm !important; /* A4 width (210mm) - margins (30mm) */
+    margin: 0 auto !important;
+    padding: 10mm !important; /* Reduced padding */
+    box-sizing: border-box !important;
+    background: white !important;
+  }
+  
+  .image-grid-2x2 {
+    max-width: 160mm !important; /* Fit within container */
+    margin: 0 auto !important;
+    display: grid !important;
+    gap: 5mm !important;
+    /* Ensure grid layout works in print */
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Force show image grid in print */
+  .image-grid-container * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Clean print layout */
+  
+  /* Ensure proper page breaks */
+  .print-page-break {
+    page-break-before: always;
+  }
+  
+  /* A4 page sizing with proper margins - WYSIWYG */
+  @page {
+    size: A4;
+    margin: 15mm;
+    /* Loại bỏ header/footer tự động để đảm bảo WYSIWYG */
+    @top-left { content: none; }
+    @top-center { content: none; }
+    @top-right { content: none; }
+    @bottom-left { content: none; }
+    @bottom-center { content: none; }
+    @bottom-right { content: none; }
+  }
+  
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    font-size: 12pt !important;
+  }
+  
+  /* Hide navigation and UI elements */
+  .sidebar, .toolbar, .pagination {
+    display: none !important;
+  }
+  
+  /* Hide overlay elements in print mode */
+  .image-slot div[style*="position: absolute"],
+  .image-slot div[style*="z-index"],
+  .image-slot .overlay,
+  .image-slot .hover-overlay,
+  .screen-only {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* A4 page styling for print */
+  .a4-page-container {
+    background: white !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 210mm !important;
+  }
+  
+  .a4-page {
+    box-shadow: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 180mm !important; /* A4 width minus margins */
+  }
+  
+  /* Print titles and text */
+  .print-title {
+    color: #1e40af !important;
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 10pt !important;
+  }
+  
+  .print-subtitle {
+    color: #374151 !important;
+    font-size: 12pt !important;
+    text-align: center !important;
+    margin-bottom: 8pt !important;
+  }
+}

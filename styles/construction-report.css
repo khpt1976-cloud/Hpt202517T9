@@ -1,0 +1,317 @@
+/**
+ * Construction Report Styles
+ * Maintains original Word document formatting
+ */
+
+/* Base document styles to match Word formatting */
+.construction-report {
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.15;
+  color: #000000;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 20px;
+  max-width: 210mm; /* A4 width */
+  min-height: 297mm; /* A4 height */
+  box-sizing: border-box;
+}
+
+/* Page styling */
+.construction-report .page {
+  page-break-after: always;
+  margin-bottom: 20px;
+  padding: 25mm 20mm; /* Standard Word margins */
+  min-height: 247mm; /* A4 height minus margins */
+}
+
+.construction-report .page:last-child {
+  page-break-after: avoid;
+}
+
+/* Typography matching Word defaults */
+.construction-report h1 {
+  font-family: 'Times New Roman', serif;
+  font-size: 16pt;
+  font-weight: bold;
+  text-align: center;
+  margin: 0 0 12pt 0;
+  line-height: 1.2;
+}
+
+.construction-report h2 {
+  font-family: 'Times New Roman', serif;
+  font-size: 14pt;
+  font-weight: bold;
+  margin: 12pt 0 6pt 0;
+  line-height: 1.2;
+}
+
+.construction-report h3 {
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  font-weight: bold;
+  margin: 6pt 0 3pt 0;
+  line-height: 1.2;
+}
+
+.construction-report p {
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.15;
+  margin: 0 0 6pt 0;
+  text-align: justify;
+}
+
+/* Table styles matching Word formatting */
+.construction-report table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 6pt 0;
+  font-family: 'Times New Roman', serif;
+  font-size: 11pt;
+}
+
+.construction-report table th,
+.construction-report table td {
+  border: 1px solid #000000;
+  padding: 3pt 6pt;
+  vertical-align: top;
+  text-align: left;
+}
+
+.construction-report table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* List styles */
+.construction-report ul,
+.construction-report ol {
+  margin: 6pt 0 6pt 18pt;
+  padding: 0;
+}
+
+.construction-report li {
+  margin: 0 0 3pt 0;
+  line-height: 1.15;
+}
+
+/* Image page specific styles */
+.construction-report .image-page {
+  page-break-before: always;
+  padding: 20mm;
+  text-align: center;
+}
+
+.construction-report .image-page h2 {
+  font-family: 'Times New Roman', serif;
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  margin: 0 0 20pt 0;
+  text-transform: uppercase;
+}
+
+.construction-report .image-grid {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.construction-report .image-grid table {
+  width: 100%;
+  height: auto;
+  border-collapse: collapse;
+}
+
+.construction-report .image-grid td {
+  border: 2px solid #000000;
+  width: 50%;
+  height: 120mm;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5mm;
+  position: relative;
+}
+
+.construction-report .image-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed #666666;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  font-family: 'Times New Roman', serif;
+}
+
+.construction-report .image-placeholder .image-label {
+  font-size: 11pt;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 5pt;
+}
+
+.construction-report .image-placeholder .image-info {
+  font-size: 9pt;
+  color: #666666;
+  margin-top: 3pt;
+}
+
+/* Form field styles */
+.construction-report .form-field {
+  display: inline-block;
+  border-bottom: 1px solid #000000;
+  min-width: 100px;
+  padding: 0 3pt 1pt 3pt;
+  margin: 0 3pt;
+}
+
+.construction-report .form-field.wide {
+  min-width: 200px;
+}
+
+.construction-report .form-field.full-width {
+  width: 100%;
+  display: block;
+  margin: 3pt 0;
+}
+
+/* Header and footer styles */
+.construction-report .header {
+  text-align: center;
+  margin-bottom: 20pt;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 10pt;
+}
+
+.construction-report .footer {
+  text-align: center;
+  margin-top: 20pt;
+  border-top: 1px solid #000000;
+  padding-top: 10pt;
+  font-size: 10pt;
+}
+
+/* Signature section */
+.construction-report .signature-section {
+  margin-top: 30pt;
+  display: flex;
+  justify-content: space-between;
+}
+
+.construction-report .signature-box {
+  text-align: center;
+  width: 45%;
+}
+
+.construction-report .signature-box .title {
+  font-weight: bold;
+  margin-bottom: 10pt;
+}
+
+.construction-report .signature-box .name {
+  margin-top: 40pt;
+  border-top: 1px solid #000000;
+  padding-top: 5pt;
+}
+
+/* Print styles */
+@media print {
+  .construction-report {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+  
+  .construction-report .page {
+    page-break-after: always;
+    margin: 0;
+    padding: 25mm 20mm;
+  }
+  
+  .construction-report .page:last-child {
+    page-break-after: avoid;
+  }
+  
+  .construction-report .image-page {
+    page-break-before: always;
+  }
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .construction-report {
+    padding: 10px;
+    font-size: 11pt;
+  }
+  
+  .construction-report .image-grid td {
+    height: 80mm;
+  }
+  
+  .construction-report .signature-section {
+    flex-direction: column;
+  }
+  
+  .construction-report .signature-box {
+    width: 100%;
+    margin-bottom: 20pt;
+  }
+}
+
+/* Enhanced table styles for better readability */
+.construction-report table.data-table {
+  border: 2px solid #000000;
+}
+
+.construction-report table.data-table th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  text-align: center;
+  padding: 6pt;
+}
+
+.construction-report table.data-table td {
+  padding: 4pt 6pt;
+  border: 1px solid #666666;
+}
+
+.construction-report table.data-table tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+/* Special formatting for Vietnamese text */
+.construction-report .vietnamese-text {
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.2;
+}
+
+/* Date and number formatting */
+.construction-report .date-field,
+.construction-report .number-field {
+  font-family: 'Times New Roman', serif;
+  font-weight: normal;
+  text-align: center;
+}
+
+/* Status indicators */
+.construction-report .status-complete {
+  color: #008000;
+  font-weight: bold;
+}
+
+.construction-report .status-pending {
+  color: #ff8000;
+  font-weight: bold;
+}
+
+.construction-report .status-issue {
+  color: #ff0000;
+  font-weight: bold;
+}

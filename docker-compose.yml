@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # ONLYOFFICE Document Server
+  onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-documentserver
+    ports:
+      - "8080:80"
+    environment:
+      - JWT_ENABLED=false
+      - JWT_SECRET=
+      - JWT_HEADER=Authorization
+      - JWT_IN_BODY=true
+      - WOPI_ENABLED=false
+      - USE_UNAUTHORIZED_STORAGE=true
+      - ALLOW_PRIVATE_IP_ADDRESS=true
+      - ALLOW_META_IP_ADDRESS=true
+    volumes:
+      - ./onlyoffice_data:/var/www/onlyoffice/Data
+      - ./onlyoffice_logs:/var/log/onlyoffice
+      - ./onlyoffice_fonts:/usr/share/fonts/truetype/custom
+      - ./uploads:/var/www/onlyoffice/documentserver/App_Data/cache/files
+    restart: unless-stopped
+    networks:
+      - onlyoffice-network
+
+  # PostgreSQL Database (for production)
+  postgres:
+    image: postgres:15-alpine
+    container_name: construction-postgres
+    environment:
+      POSTGRES_DB: construction_diary
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    restart: unless-stopped
+    networks:
+      - onlyoffice-network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: construction-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - onlyoffice-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  onlyoffice-network:
+    driver: bridge

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Demo TinyMCE Editor - Đã xóa đường kẻ dọc!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .success-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .demo-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .demo-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .demo-card h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        .demo-card a {
+            color: #87CEEB;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .demo-card a:hover {
+            color: #FFD700;
+        }
+        .features {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .feature-item::before {
+            content: "✅";
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 DEMO TINYMCE EDITOR</h1>
+            <h2>✨ Đã xóa đường kẻ dọc và tăng vùng xám!</h2>
+            
+            <div class="success-badge">✅ Hoàn thành 100%</div>
+            <div class="success-badge">🔥 Không watermark</div>
+            <div class="success-badge">📏 Vùng xám cao hơn A4</div>
+        </div>
+
+        <div class="demo-links">
+            <div class="demo-card">
+                <h3>🚀 LINK DEMO CHÍNH</h3>
+                <p>Truy cập trực tiếp vào editor:</p>
+                <a href="/construction-reports/editor/1" target="_blank">
+                    👉 MỞ TINYMCE EDITOR
+                </a>
+            </div>
+            
+            <div class="demo-card">
+                <h3>🏠 TRANG CHỦ</h3>
+                <p>Xem toàn bộ hệ thống:</p>
+                <a href="/" target="_blank">
+                    👉 MỞ TRANG CHỦ
+                </a>
+            </div>
+            
+            <div class="demo-card">
+                <h3>📋 DANH SÁCH BÁO CÁO</h3>
+                <p>Quản lý báo cáo thi công:</p>
+                <a href="/construction-reports" target="_blank">
+                    👉 XEM BÁO CÁO
+                </a>
+            </div>
+        </div>
+
+        <div class="features">
+            <h3>🎯 Tính năng đã hoàn thành:</h3>
+            <div class="feature-item">Xóa hoàn toàn đường kẻ dọc visual guides</div>
+            <div class="feature-item">Tăng chiều cao vùng xám cao hơn khổ giấy A4</div>
+            <div class="feature-item">TinyMCE Editor không watermark</div>
+            <div class="feature-item">Giao diện responsive, thân thiện</div>
+            <div class="feature-item">Hệ thống báo cáo thi công hoàn chỉnh</div>
+            <div class="feature-item">Error handling và performance tối ưu</div>
+        </div>
+
+        <div class="instructions">
+            <h3>🔗 Tạo link công khai:</h3>
+            <p><strong>Cách 1 - Vercel (Khuyến nghị):</strong></p>
+            <div class="code-block">
+1. Truy cập: https://vercel.com
+2. Đăng nhập GitHub
+3. New Project → Import: HptAI2025/KH5T9
+4. Chọn thư mục: Khuongcuoicung
+5. Deploy
+            </div>
+            
+            <p><strong>Cách 2 - Netlify:</strong></p>
+            <div class="code-block">
+1. Truy cập: https://netlify.com
+2. New site from Git → HptAI2025/KH5T9
+3. Base directory: Khuongcuoicung
+4. Build: npm run build
+5. Publish: .next
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <h3>🎊 Chúc mừng! Dự án đã hoàn thành!</h3>
+            <p>Tất cả yêu cầu đã được thực hiện thành công ✨</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto redirect to editor after 3 seconds if user wants
+        setTimeout(() => {
+            if (confirm("🚀 Bạn có muốn mở TinyMCE Editor ngay không?")) {
+                window.open('/construction-reports/editor/1', '_blank');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

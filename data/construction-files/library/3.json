@@ -1,0 +1,17 @@
+{
+  "id": "lib-1757119667639",
+  "name": "3",
+  "reportId": "rep-1757119641331",
+  "reportName": "Nhật ký thi công",
+  "totalPages": 3,
+  "currentPage": 3,
+  "pagesContent": {
+    "1": "<p>sdfasdfasd</p>",
+    "2": "<p>ấdf</p>",
+    "3": "<p>&aacute;dfasdfsdfads</p>"
+  },
+  "editorContent": "<p>&aacute;dfasdfsdfads</p>",
+  "createdAt": "2025-09-06T00:47:47.639Z",
+  "type": "library",
+  "savedAt": "2025-09-06T00:47:47.375Z"
+}

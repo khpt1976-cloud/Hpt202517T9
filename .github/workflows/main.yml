@@ -1,4 +1,4 @@
-name: Deploy to Production Server
+name: Deploy to Production
 
 on:
   push:
@@ -10,40 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: --- 1. Connect to Server and Setup ---
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "--- Cleaning up ALL old project directories ---"
-            rm -rf /var/www/DuanHpt15T9
-            rm -rf /var/www/Hpt202517T9
+            # Di chuyển đến thư mục dự án
+            cd /var/www/Hpt202517T9
             
-            echo "--- Cloning the new repository with the CORRECT name ---"
-            cd /var/www/
-            git clone https://github.com/khpt1976-cloud/Hpt202517T9.git Hpt202517T9
-
-      - name: --- 2. Install, Build, and Restart ---
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "--- Navigating to the CORRECT project directory ---"
-            cd /var/www/Hpt202517T9/DuanHpt9t9
-
-            echo "--- Installing dependencies ---"
+            # Kéo mã nguồn mới nhất từ nhánh main
+            git pull origin main
+            
+            # Cài đặt hoặc cập nhật các gói phụ thuộc
             npm install
-
-            echo "--- Building the application ---"
-            npm run build
-
-            echo "--- Restarting the application with the CORRECT name ---"
-            pm2 delete all
-            pm2 start npm --name "Hpt202517T9" -- start
-            pm2 save
             
-            echo "--- Deployment successful! ---"
+            # Đồng bộ cơ sở dữ liệu với schema
+            npx prisma db push
+            
+            # Build lại ứng dụng Next.js
+            npm run build
+            
+            # Khởi động lại ứng dụng bằng PM2 một cách mượt mà
+            # 'reload' sẽ khởi động lại mà không gây gián đoạn (zero-downtime)
+            pm2 reload Hpt202517T9

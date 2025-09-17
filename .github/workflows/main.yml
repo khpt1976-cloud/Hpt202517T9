@@ -1,0 +1,48 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: --- 1. Connect to Server and Setup ---
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "--- Cleaning up old project directory if it exists ---"
+            rm -rf /var/www/DuanHpt15T9
+            
+            echo "--- Cloning the new repository: Hpt202517T9 ---"
+            cd /var/www/
+            git clone https://github.com/khpt1976-cloud/Hpt202517T9.git DuanHpt15T9
+
+      - name: --- 2. Install, Build, and Restart ---
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "--- Navigating to project directory ---"
+            cd /var/www/DuanHpt15T9/DuanHpt9t9
+
+            echo "--- Installing dependencies ---"
+            npm install
+
+            echo "--- Building the application ---"
+            npm run build
+
+            echo "--- Restarting the application with PM2 ---"
+            pm2 delete all
+            pm2 start npm --name "DuanHpt15T9" -- start
+            pm2 save
+            
+            echo "--- Deployment successful! ---"

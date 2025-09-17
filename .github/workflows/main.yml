@@ -17,12 +17,13 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "--- Cleaning up old project directory if it exists ---"
+            echo "--- Cleaning up ALL old project directories ---"
             rm -rf /var/www/DuanHpt15T9
+            rm -rf /var/www/Hpt202517T9
             
-            echo "--- Cloning the new repository: Hpt202517T9 ---"
+            echo "--- Cloning the new repository with the CORRECT name ---"
             cd /var/www/
-            git clone https://github.com/khpt1976-cloud/Hpt202517T9.git DuanHpt15T9
+            git clone https://github.com/khpt1976-cloud/Hpt202517T9.git Hpt202517T9
 
       - name: --- 2. Install, Build, and Restart ---
         uses: appleboy/ssh-action@master
@@ -31,8 +32,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "--- Navigating to project directory ---"
-            cd /var/www/DuanHpt15T9/DuanHpt9t9
+            echo "--- Navigating to the CORRECT project directory ---"
+            cd /var/www/Hpt202517T9/DuanHpt9t9
 
             echo "--- Installing dependencies ---"
             npm install
@@ -40,9 +41,9 @@ jobs:
             echo "--- Building the application ---"
             npm run build
 
-            echo "--- Restarting the application with PM2 ---"
+            echo "--- Restarting the application with the CORRECT name ---"
             pm2 delete all
-            pm2 start npm --name "DuanHpt15T9" -- start
+            pm2 start npm --name "Hpt202517T9" -- start
             pm2 save
             
             echo "--- Deployment successful! ---"

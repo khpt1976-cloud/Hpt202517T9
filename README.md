@@ -1,12 +1,12 @@
-# 🏗️ DuanHpt15T9 - Construction Management System
+# 🏗️ Hệ thống Quản lý Thi công Xây dựng
 
-## 📋 Mô tả dự án
-Hệ thống quản lý thi công xây dựng với giao diện hiện đại, được đơn giản hóa để loại bỏ chức năng template phức tạp.
+## 📋 Giới thiệu
+Hệ thống quản lý nhật ký thi công xây dựng hiện đại với giao diện thân thiện, được xây dựng trên Next.js 14 và Prisma ORM.
 
 ## ✨ Tính năng chính
 
 ### 📝 Quản lý nhật ký thi công
-- **Tạo nhật ký đơn giản**: Khởi tạo với 1 trang, tạo thêm dựa trên cấu hình form
+- **Tạo nhật ký đơn giản**: Khởi tạo nhanh chóng với giao diện trực quan
 - **Layout ảnh linh hoạt**: Hỗ trợ nhiều layout (1×1, 2×1, 2×2, 3×2, v.v.)
 - **Quản lý trang**: Thêm/xóa trang, khóa/mở khóa trang
 - **Lưu trữ tự động**: Auto-save và manual save
@@ -21,33 +21,28 @@ Hệ thống quản lý thi công xây dựng với giao diện hiện đại, �
 - **Export**: Xuất file PDF/Word
 - **Chia sẻ**: Chia sẻ nhật ký với team
 
-## 🚀 Cài đặt và chạy
+## 🚀 Cài đặt nhanh
 
-### Yêu cầu hệ thống
-- Node.js 18+
-- npm hoặc yarn
-- Database (PostgreSQL/MySQL)
-
-### Cài đặt
 ```bash
 # Clone repository
-git clone https://github.com/khpt1976-cloud/DuanHpt15T9.git
-cd DuanHpt15T9
+git clone https://github.com/khpt1976-cloud/Hpt202517T9.git
+cd Hpt202517T9
 
 # Cài đặt dependencies
 npm install
 
-# Cấu hình environment
-cp .env.example .env.local
-# Chỉnh sửa .env.local với thông tin database và API keys
+# Thiết lập database
+npm run db:push
+npm run db:seed
 
-# Chạy development server
+# Chạy ứng dụng
 npm run dev
 ```
 
+**📖 [Xem hướng dẫn cài đặt chi tiết](./HUONG_DAN_CAI_DAT.md)**
+
 ### Truy cập ứng dụng
 - **Development**: http://localhost:3000
-- **Production**: Theo cấu hình deployment
 
 ## 📁 Cấu trúc dự án
 

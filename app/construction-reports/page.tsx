@@ -992,19 +992,24 @@ export default function ConstructionDiarysPage() {
         const response = await fetch('/api/construction-reports')
         const result = await response.json()
         
-        if (result.success && result.data.length > 0) {
-          // Filter completed diaries that can be used as templates
-          const completedDiaries = result.data.filter((diary: any) => 
-            diary.status === 'completed' || diary.status === 'published'
-          )
-          setExistingDiaries(completedDiaries)
-          console.log('✅ Loaded', completedDiaries.length, 'existing diaries for template selection')
+        if (Array.isArray(result) && result.length > 0) {
+          // All reports can be used as templates, add status and pageCount properties
+          const availableDiaries = result.map((diary: any) => ({
+            ...diary,
+            status: 'completed', // Mark all as completed for template use
+            pageCount: diary.totalPages || 1,
+            createdAt: diary.createdAt || diary.lastModified
+          }))
+          setExistingDiaries(availableDiaries)
+          console.log('✅ Loaded', availableDiaries.length, 'existing diaries for template selection')
         } else {
           console.log('📖 No existing diaries found')
+          setExistingDiaries([])
         }
       } catch (error) {
         console.error('❌ Error loading existing diaries:', error)
         console.log('📖 No existing diaries available')
+        setExistingDiaries([])
       }
     }
 

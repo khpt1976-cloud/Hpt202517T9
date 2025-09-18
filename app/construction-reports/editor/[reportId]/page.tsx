@@ -1442,21 +1442,29 @@ export default function ReportEditorPage() {
   }
 
   // KHÔI PHỤC: Load existing diaries for template selection
-  const loadExistingDiaries = () => {
+  const loadExistingDiaries = async () => {
     try {
-      const savedReports = localStorage.getItem("construction-reports")
-      if (savedReports) {
-        const reports = JSON.parse(savedReports)
-        // Filter out current report and only show reports with content
-        const availableDiaries = reports.filter((report: any) => 
-          report.id !== reportId && 
-          (Object.keys(report.pages || {}).length > 0 || report.totalPages > 1)
+      console.log('📚 Loading existing diaries from API...')
+      const response = await fetch('/api/construction-reports')
+      const result = await response.json()
+      
+      console.log('📚 API response:', result)
+      
+      if (Array.isArray(result) && result.length > 0) {
+        // Filter out current report - show all other reports as potential templates
+        const availableDiaries = result.filter((report: any) =>
+          report.id !== reportId
         )
         setExistingDiaries(availableDiaries)
         console.log('📚 Loaded existing diaries for template:', availableDiaries.length)
+        console.log('📚 Available diaries:', availableDiaries.map(d => ({ id: d.id, title: d.title, totalPages: d.totalPages })))
+      } else {
+        console.log('📚 No diaries found or invalid response format')
+        setExistingDiaries([])
       }
     } catch (error) {
       console.error('Error loading existing diaries:', error)
+      setExistingDiaries([])
     }
   }
 
@@ -1480,10 +1488,10 @@ export default function ReportEditorPage() {
 
   // Đã xóa: handleImageUpload function
 
-  const handleAddDiary = () => {
+  const handleAddDiary = async () => {
     setShowAddDiaryDialog(true)
     // Load existing diaries when dialog opens
-    loadExistingDiaries()
+    await loadExistingDiaries()
   }
 
   // Generate HTML for image page - Simple Table Approach

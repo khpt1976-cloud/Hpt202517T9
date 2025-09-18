@@ -16,6 +16,9 @@ interface ImageGridEditorProps {
   mainTitle?: string
   subTitle?: string
   onTitleChange?: (mainTitle: string, subTitle: string) => void
+  // THÊM: Text editor props
+  headerContent?: string
+  onHeaderContentChange?: (content: string) => void
   // THÊM: Margin props
   marginLeft?: number
   marginRight?: number
@@ -37,6 +40,9 @@ export default function ImageGridEditor({
   mainTitle = "Nhật ký thi công",
   subTitle = "Hình ảnh thi công",
   onTitleChange,
+  // NHẬN TEXT EDITOR PROPS
+  headerContent = "",
+  onHeaderContentChange,
   // NHẬN MARGIN PROPS VỚI GIÁ TRỊ MẶC ĐỊNH
   marginLeft = 10,
   marginRight = 10,
@@ -393,7 +399,7 @@ export default function ImageGridEditor({
         boxSizing: 'border-box',
         overflow: 'hidden' // QUAN TRỌNG: Ngăn tràn trang
       }}>
-      {/* Header Section - DYNAMIC HEIGHT VỚI MARGIN TÙY CHỈNH */}
+      {/* Header Section - TEXT EDITOR */}
       <div className="text-center" style={{ 
         height: `${marginHeader}mm`, 
         display: 'flex', 
@@ -402,70 +408,39 @@ export default function ImageGridEditor({
         padding: `10mm ${effectiveMarginRight}mm 5mm ${effectiveMarginLeft}mm`,
         boxSizing: 'border-box'
       }}>
-        {/* Main Title - Có thể chỉnh sửa */}
-        {isEditingMain && !readonly ? (
-          <input
-            type="text"
-            value={editableMainTitle}
-            onChange={(e) => setEditableMainTitle(e.target.value)}
-            onBlur={handleMainTitleSave}
-            onKeyDown={handleMainTitleKeyPress}
-            className="text-xl font-bold text-blue-700 mb-4 print-title bg-transparent border-2 border-blue-300 rounded px-2 py-1 text-center w-full"
-            autoFocus
-            placeholder="Nhập tiêu đề chính..."
-          />
-        ) : (
-          <h2 
-            className={`text-xl font-bold text-blue-700 mb-4 print-title ${!readonly ? 'cursor-pointer hover:bg-blue-50 rounded px-2 py-1' : ''}`}
-            onClick={() => !readonly && setIsEditingMain(true)}
-            title={!readonly ? "Click để chỉnh sửa tiêu đề" : ""}
-          >
-            {editableMainTitle}
-          </h2>
-        )}
-
-        {/* Sub Title - Có thể chỉnh sửa */}
-        {isEditingSub && !readonly ? (
-          <input
-            type="text"
-            value={editableSubTitle}
-            onChange={(e) => setEditableSubTitle(e.target.value)}
-            onBlur={handleSubTitleSave}
-            onKeyDown={handleSubTitleKeyPress}
-            className="text-lg font-semibold text-gray-800 mb-2 print-subtitle bg-transparent border-2 border-gray-300 rounded px-2 py-1 text-center w-full"
-            autoFocus
-            placeholder="Nhập tiêu đề phụ..."
-          />
-        ) : (
-          <h3 
-            className={`text-lg font-semibold text-gray-800 mb-2 print-subtitle ${!readonly ? 'cursor-pointer hover:bg-gray-50 rounded px-2 py-1' : ''}`}
-            onClick={() => !readonly && setIsEditingSub(true)}
-            title={!readonly ? "Click để chỉnh sửa tiêu đề phụ" : ""}
-          >
-            {editableSubTitle}
-          </h3>
-        )}
-        
-        {/* Show aspect ratio info and warnings */}
-        <div className="text-xs mt-1 screen-only">
-          <div className="text-blue-600 mb-1">
-            📐 Tỷ lệ ảnh: {aspectRatio} | Khung: {finalCellWidth}×{finalCellHeight}mm
-            {gridCalculation.aspectRatio.isExact ? ' ✅' : ' ⚠️'}
+        {/* Text Editor */}
+        {!readonly ? (
+          <div className="w-full">
+            <textarea
+              value={headerContent}
+              onChange={(e) => onHeaderContentChange?.(e.target.value)}
+              placeholder="Nhập nội dung cho trang này..."
+              className="w-full h-20 p-3 border-2 border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:outline-none text-sm"
+              style={{
+                minHeight: '60px',
+                fontFamily: 'Arial, sans-serif'
+              }}
+            />
+            <div className="text-xs text-gray-500 mt-1 screen-only">
+              💡 Nội dung này chỉ áp dụng cho trang {pageNumber}
+            </div>
           </div>
-          <div className="text-gray-600 mb-1">
-            📏 Margin: L={effectiveMarginLeft}mm, R={effectiveMarginRight}mm, T={marginHeader}mm, B={marginBottom}mm
-            {centerHorizontally && effectiveMarginLeft !== marginLeft && (
-              <span className="text-cyan-600 ml-2">🎯 Đã căn giữa</span>
+        ) : (
+          <div className="w-full">
+            {headerContent ? (
+              <div 
+                className="text-sm text-gray-800 whitespace-pre-wrap p-2 bg-gray-50 rounded border min-h-[60px] flex items-center justify-center"
+                style={{ fontFamily: 'Arial, sans-serif' }}
+              >
+                {headerContent}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-400 italic min-h-[60px] flex items-center justify-center">
+                Chưa có nội dung
+              </div>
             )}
           </div>
-          {warnings.length > 0 && (
-            <div className="text-yellow-600">
-              {warnings.map((warning, index) => (
-                <p key={index}>{warning}</p>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Image Grid Section - DYNAMIC HEIGHT VỚI MARGIN TÙY CHỈNH */}

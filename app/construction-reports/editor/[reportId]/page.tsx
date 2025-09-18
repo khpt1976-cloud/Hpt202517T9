@@ -199,6 +199,8 @@ export default function ReportEditorPage() {
     marginHeader?: number;
     imageAspectRatio?: string;
     centerHorizontally?: boolean;
+    // ✅ THÊM: Header content cho text editor
+    headerContent?: string;
   }>>({})
 
   // ✅ Refs để access state mới nhất trong callbacks
@@ -377,7 +379,8 @@ export default function ReportEditorPage() {
                     marginBottom: 10,
                     marginHeader: 45,
                     imageAspectRatio: "4:3",
-                    centerHorizontally: false
+                    centerHorizontally: false,
+                    headerContent: ""
                   }
                 }
               }
@@ -413,7 +416,8 @@ export default function ReportEditorPage() {
           marginBottom: 10,
           marginHeader: 45,
           imageAspectRatio: "4:3",
-          centerHorizontally: false
+          centerHorizontally: false,
+          headerContent: ""
         }
       }))
     } else {
@@ -1510,9 +1514,9 @@ export default function ReportEditorPage() {
       </style>
       <div style="width: 100%; max-width: 210mm; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="color: #1e40af; margin: 0 0 10px 0; font-size: 18px;">Báo cáo thi công</h2>
+          <!-- <h2 style="color: #1e40af; margin: 0 0 10px 0; font-size: 18px;">Báo cáo thi công</h2> -->
           <p style="color: #64748b; margin: 0; font-size: 12px;">Trang ${pageNumber}</p>
-          <h3 style="color: #374151; margin: 15px 0; font-size: 14px;">Hình ảnh thi công</h3>
+          <!-- <h3 style="color: #374151; margin: 15px 0; font-size: 14px;">Hình ảnh thi công</h3> -->
         </div>
         
         <table style="width: 100%; border-collapse: separate; border-spacing: 10px; margin: 20px auto;">
@@ -2087,9 +2091,9 @@ export default function ReportEditorPage() {
           
           tempDiv.innerHTML = `
             <div style="text-align: center; margin-bottom: 15px;">
-              <h2 style="color: #1d4ed8; font-size: 20px; margin: 0 0 8px 0;">Báo cáo thi công</h2>
+              <!-- <h2 style="color: #1d4ed8; font-size: 20px; margin: 0 0 8px 0;">Báo cáo thi công</h2> -->
 
-              <h3 style="font-size: 16px; margin: 0; color: #333;">Hình ảnh thi công</h3>
+              <!-- <h3 style="font-size: 16px; margin: 0; color: #333;">Hình ảnh thi công</h3> -->
             </div>
             
             <div style="
@@ -3543,7 +3547,8 @@ export default function ReportEditorPage() {
               marginBottom: marginBottom,
               marginHeader: marginHeader,
               imageAspectRatio: imageAspectRatio,
-              centerHorizontally: centerHorizontally
+              centerHorizontally: centerHorizontally,
+              headerContent: ""
             }
           }
           updated[pageNumber].images[slotIndex] = imageData
@@ -4077,6 +4082,17 @@ export default function ReportEditorPage() {
                 marginHeader={imagePagesConfig[currentPage].marginHeader || marginHeader}
                 aspectRatio={imagePagesConfig[currentPage].imageAspectRatio || imageAspectRatio}
                 centerHorizontally={imagePagesConfig[currentPage].centerHorizontally || centerHorizontally}
+                headerContent={imagePagesConfig[currentPage].headerContent || ""}
+                onHeaderContentChange={(content) => {
+                  console.log(`📝 Header content changed: page ${currentPage}`)
+                  setImagePagesConfig(prev => ({
+                    ...prev,
+                    [currentPage]: {
+                      ...prev[currentPage],
+                      headerContent: content
+                    }
+                  }))
+                }}
                 onImageChange={(slotIndex, imageData) => {
                   console.log(`🖼️ Image changed: page ${currentPage}, slot ${slotIndex}`)
                   
@@ -4094,7 +4110,8 @@ export default function ReportEditorPage() {
                         marginBottom: marginBottom,
                         marginHeader: marginHeader,
                         imageAspectRatio: imageAspectRatio,
-                        centerHorizontally: centerHorizontally
+                        centerHorizontally: centerHorizontally,
+                        headerContent: ""
                       }
                     }
                     updated[currentPage].images[slotIndex] = imageData

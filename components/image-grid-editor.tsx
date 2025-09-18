@@ -433,9 +433,7 @@ export default function ImageGridEditor({
             >
               {headerContent || "Chưa có nội dung"}
             </div>
-            <div className="text-xs text-gray-500 mt-1 screen-only print:hidden">
-              💡 Nội dung này chỉ áp dụng cho trang {pageNumber}
-            </div>
+
           </div>
         ) : (
           <div className="w-full">

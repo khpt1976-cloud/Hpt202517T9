@@ -92,6 +92,7 @@ export default function ReportEditorPage() {
   const [reportName, setReportName] = useState("Nhật ký thi công")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isLoadingData, setIsLoadingData] = useState(false)
   // Removed documentConfig state - using TinyMCE only
   const [totalPages, setTotalPages] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
@@ -439,14 +440,16 @@ export default function ReportEditorPage() {
     console.log("  - totalPages:", totalPages)
     console.log("  - imagePagesConfig:", imagePagesConfig)
     
-    // ✅ AUTO-SAVE: Save when critical data changes (but not on initial load)
-    if (totalPages > 1 || Object.keys(pagesContent).length > 1 || Object.keys(imagePagesConfig).length > 0) {
+    // ✅ AUTO-SAVE: Save when critical data changes (but not during data loading)
+    if (!isLoadingData && (totalPages > 1 || Object.keys(pagesContent).length > 1 || Object.keys(imagePagesConfig).length > 0)) {
       console.log("🔄 [AUTO-SAVE] Critical state changed, auto-saving...")
       setTimeout(() => {
         manualSaveToLocalStorage()
       }, 200) // Small delay to batch multiple changes
+    } else if (isLoadingData) {
+      console.log("⏸️ [AUTO-SAVE] Skipping auto-save during data loading")
     }
-  }, [pagesContent, totalPages, imagePagesConfig])
+  }, [pagesContent, totalPages, imagePagesConfig, isLoadingData])
 
   // ✅ FORCE FIX: Đảm bảo trang được thêm bằng "Thêm trang" không có imagePagesConfig
   useEffect(() => {
@@ -475,11 +478,7 @@ export default function ReportEditorPage() {
           return updated
         })
         
-        // Force save ngay lập tức
-        setTimeout(() => {
-          manualSaveToLocalStorage()
-          console.log(`💾 [FORCE FIX] Đã lưu sau khi xóa imagePagesConfig cho trang ${pageNumber}`)
-        }, 25)
+        // Note: Auto-save will handle this automatically
       }
     })
     
@@ -806,6 +805,9 @@ export default function ReportEditorPage() {
   const loadReportData = async () => {
     console.log(`🔍 [LOAD] loadReportData called with reportId: ${reportId}`)
     
+    // Set loading flag to prevent auto-save during load
+    setIsLoadingData(true)
+    
     // Try API first
     try {
       console.log(`🌐 [API] Trying to load from API...`)
@@ -836,6 +838,9 @@ export default function ReportEditorPage() {
             imagePagesConfigRef.current = loadedImagePagesConfig
             totalPagesRef.current = loadedTotalPages
             console.log(`🔄 [API] Updated refs with loaded data`)
+            
+            // Clear loading flag after data is loaded
+            setIsLoadingData(false)
           }, 10)
           
           return true
@@ -875,6 +880,9 @@ export default function ReportEditorPage() {
             imagePagesConfigRef.current = loadedImagePagesConfig
             totalPagesRef.current = loadedTotalPages
             console.log(`🔄 [LOCALSTORAGE] Updated refs with loaded data`)
+            
+            // Clear loading flag after data is loaded
+            setIsLoadingData(false)
           }, 10)
           
           return true
@@ -887,6 +895,9 @@ export default function ReportEditorPage() {
     } catch (error) {
       console.error("🚨 [LOAD] Error loading report data:", error)
     }
+    
+    // Clear loading flag even if load failed
+    setIsLoadingData(false)
     return false
   }
 
@@ -1938,19 +1949,8 @@ export default function ReportEditorPage() {
     // ✅ IMMEDIATE SAVE: Save data immediately with multiple attempts
     console.log(`💾 [CREATE DIARY] About to save with updated data`)
     
-    // Save immediately
+    // Save immediately (single save only)
     manualSaveToLocalStorage(newTotalPages, updatedImagePagesConfig, updatedPagesContent)
-    
-    // ✅ BACKUP SAVES: Additional saves to ensure data persistence
-    setTimeout(() => {
-      console.log(`💾 [CREATE DIARY] Backup save #1`)
-      manualSaveToLocalStorage(newTotalPages, updatedImagePagesConfig, updatedPagesContent)
-    }, 100)
-    
-    setTimeout(() => {
-      console.log(`💾 [CREATE DIARY] Backup save #2`)
-      manualSaveToLocalStorage(newTotalPages, updatedImagePagesConfig, updatedPagesContent)
-    }, 500)
     
     // Show success toast
     toast({
@@ -3162,19 +3162,7 @@ export default function ReportEditorPage() {
     
     console.log(`[ADD PAGE] ✅ Hoàn thành thêm trang trắng ${newPageNumber}`)
     
-    // ✅ STEP 3: Force save ngay lập tức
-    setTimeout(() => {
-      manualSaveToLocalStorage(newPageNumber, cleanImagePagesConfig, cleanPagesContent)
-      console.log(`[ADD PAGE] 💾 Đã lưu state sạch sau khi thêm trang`)
-    }, 50)
-    
-    // ✅ STEP 4: Backup save để chắc chắn
-    setTimeout(() => {
-      console.log(`[ADD PAGE] 🔍 Kiểm tra state sau 200ms:`)
-      console.log(`[ADD PAGE] 📊 imagePagesConfig hiện tại:`, Object.keys(imagePagesConfig))
-      console.log(`[ADD PAGE] 📄 pagesContent hiện tại:`, Object.keys(pagesContent))
-      manualSaveToLocalStorage()
-    }, 200)
+    // Note: Auto-save will handle saving automatically
   }
 
   // Hàm xóa trang

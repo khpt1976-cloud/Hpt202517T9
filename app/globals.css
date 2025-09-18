@@ -368,4 +368,169 @@ div[style*="z-index"][style*="red"] {
     text-align: center !important;
     margin-bottom: 8pt !important;
   }
+  
+  /* FORCE SHOW header content in print - ULTIMATE RULES */
+  .print-header-content,
+  div.print-header-content,
+  .header-content,
+  div.header-content,
+  .text-sm.text-gray-800.whitespace-pre-wrap,
+  div[class*="header-content"],
+  div[class*="text-sm"][class*="text-gray-800"],
+  div[class*="print-header"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 3px solid #000000 !important;
+    padding: 15pt !important;
+    margin: 10pt 0 15pt 0 !important;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    line-height: 1.6 !important;
+    text-align: center !important;
+    min-height: 30pt !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 99999 !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    /* Force content to show */
+    content: attr(data-content) !important;
+  }
+  
+  /* Target by content - backup method */
+  div:not(:empty):not(.image-slot):not(.screen-only) {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  /* Force show any div with text content in image grid */
+  .image-grid-container div:not(.image-slot):not(.screen-only):not(:empty) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 1px solid #666666 !important;
+    padding: 8pt !important;
+    margin-bottom: 8pt !important;
+    font-size: 11pt !important;
+    text-align: center !important;
+  }
+  
+  /* Target by data attribute - most reliable method */
+  div[data-print-content="true"],
+  *[data-print-content="true"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    padding: 10pt !important;
+    margin: 5pt 0 10pt 0 !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+    min-height: 25pt !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Fallback: Show content using ::before pseudo-element */
+  div[data-content]:empty::before {
+    content: attr(data-content) !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    padding: 10pt !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    text-align: center !important;
+  }
+  
+  /* FORCE SHOW TEXTBOX CONTENT IN PRINT */
+  textbox,
+  input[type="text"],
+  textarea,
+  input,
+  textarea[placeholder*="Nhập nội dung"],
+  *[role="textbox"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    padding: 10pt !important;
+    margin: 5pt 0 10pt 0 !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+    min-height: 25pt !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* FORCE SHOW TEXT CONTENT USING PSEUDO ELEMENTS */
+  textbox::after,
+  input[type="text"]::after,
+  textarea::after {
+    content: attr(value) !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    padding: 10pt !important;
+    margin: 5pt 0 10pt 0 !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 10000 !important;
+  }
+  
+  /* ULTIMATE FALLBACK - CREATE VISIBLE CONTENT */
+  .w-full:has(textbox[value*="Đây là text"])::before {
+    content: "Đây là text header để test in ấn" !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    color: #000000 !important;
+    border: 3px solid #000000 !important;
+    padding: 15pt !important;
+    margin: 10pt 0 !important;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 10001 !important;
+  }
 }

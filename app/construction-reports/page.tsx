@@ -194,6 +194,46 @@ export default function ConstructionDiarysPage() {
   // NEW: Aspect ratio state
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<string>("4:3")
 
+  // Function to refresh diaries from database
+  const refreshDiariesFromDatabase = async () => {
+    try {
+      const response = await fetch('/api/construction-reports')
+      if (response.ok) {
+        const reports = await response.json()
+        console.log('🔄 Refreshing diaries from database:', reports)
+        
+        // Get first available category as default
+        let defaultCategoryId = 'default-category'
+        try {
+          const categoriesResponse = await fetch('/api/categories')
+          if (categoriesResponse.ok) {
+            const categoriesData = await categoriesResponse.json()
+            if (categoriesData.success && Array.isArray(categoriesData.data) && categoriesData.data.length > 0) {
+              defaultCategoryId = categoriesData.data[0].id
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load categories for default categoryId')
+        }
+        
+        // Transform database reports to diary format
+        const diariesFromDB = reports.map((report: any) => ({
+          id: report.id,
+          title: report.title,
+          categoryId: defaultCategoryId, // Use first available category
+          status: 'completed' as const,
+          createdDate: new Date(report.createdAt).toISOString().split('T')[0],
+          lastModified: new Date(report.lastModified).toISOString().split('T')[0]
+        }))
+        
+        setDiaries(diariesFromDB)
+        localStorage.setItem('diaries', JSON.stringify(diariesFromDB))
+      }
+    } catch (error) {
+      console.error('Error refreshing diaries from database:', error)
+    }
+  }
+
   // Persist dialog values to localStorage to avoid accidental resets
   useEffect(() => {
     try {
@@ -408,36 +448,64 @@ export default function ConstructionDiarysPage() {
       lastModified: new Date().toISOString().split("T")[0],
     }
 
-    setDiaries((prev) => {
-      const newDiaries = [...prev, diary]
-      localStorage.setItem("diaries", JSON.stringify(newDiaries))
-      return newDiaries
-    })
+    // Save to database first
+    try {
+      const reportData = {
+        title: newDiary.title,
+        pages: { 1: "" }, // Start with one empty page
+        totalPages: 1,
+        imagePagesConfig: {}
+      }
+      
+      const response = await fetch('/api/construction-reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportId: diaryId,
+          data: reportData
+        })
+      })
+      
+      if (response.ok) {
+        console.log('✅ Successfully saved diary to database')
+        
+        // Refresh diaries list from database
+        await refreshDiariesFromDatabase()
+        
+        // Lưu thông tin báo cáo với template (ưu tiên template mặc định nếu có)
+        const reportConfig = {
+          diaryId,
+          title: newDiary.title,
+          mauNhatKyDau: defaultInitial?.id || null,
+          mauNhatKyThem: defaultDaily?.id || null,
+          soTrangDau,
+          soTrangThem,
+          soTrangAnh,
+          soAnhTrenTrang: imageConfig.imagesPerPage || 4,
+          tongSoTrang,
+          templateFiles: {
+            mauNhatKyDau: defaultInitial?.id || null,
+            mauNhatKyThem: defaultDaily?.id || null
+          },
+          isSimpleReport: false
+        }
+        localStorage.setItem(`report-config-${diaryId}`, JSON.stringify(reportConfig))
 
-    // Lưu thông tin báo cáo với template (ưu tiên template mặc định nếu có)
-    const reportConfig = {
-      diaryId,
-      title: newDiary.title,
-      mauNhatKyDau: defaultInitial?.id || null,
-      mauNhatKyThem: defaultDaily?.id || null,
-      soTrangDau,
-      soTrangThem,
-      soTrangAnh,
-      soAnhTrenTrang: imageConfig.imagesPerPage || 4,
-      tongSoTrang,
-      templateFiles: {
-        mauNhatKyDau: defaultInitial?.id || null,
-        mauNhatKyThem: defaultDaily?.id || null
-      },
-      isSimpleReport: false
+        setNewDiary({ title: "", status: "draft" })
+        setShowCreateDiary(false)
+
+        // Điều hướng sang trang editor, mặc định mở trang 1
+        router.push(`/construction-reports/editor/${diaryId}?pages=1`)
+      } else {
+        console.error('❌ Failed to save diary to database')
+        alert('Không thể lưu nhật ký vào database. Vui lòng thử lại.')
+      }
+    } catch (error) {
+      console.error('❌ Error saving diary to database:', error)
+      alert('Có lỗi xảy ra khi lưu nhật ký. Vui lòng thử lại.')
     }
-    localStorage.setItem(`report-config-${diaryId}`, JSON.stringify(reportConfig))
-
-    setNewDiary({ title: "", status: "draft" })
-    setShowCreateDiary(false)
-
-    // Điều hướng sang trang editor, mặc định mở trang 1
-    router.push(`/construction-reports/editor/${diaryId}?pages=1`)
   }
 
   // Add Diary Dialog functions
@@ -669,30 +737,142 @@ export default function ConstructionDiarysPage() {
   useEffect(() => {
     setIsMounted(true)
     
-    // Load data from localStorage after component mounts
-    try {
-      const savedProjectGroups = localStorage.getItem('projectGroups')
-      if (savedProjectGroups) {
-        setProjectGroups(JSON.parse(savedProjectGroups))
+    // Load data from database and localStorage after component mounts
+    const loadData = async () => {
+      try {
+        // Load diaries from database first
+        const response = await fetch('/api/construction-reports')
+        if (response.ok) {
+          const reports = await response.json()
+          console.log('📋 Loading diaries from database:', reports)
+          
+          // Get first available category as default
+          let defaultCategoryId = 'default-category'
+          try {
+            const categoriesResponse = await fetch('/api/categories')
+            if (categoriesResponse.ok) {
+              const categoriesData = await categoriesResponse.json()
+              if (categoriesData.success && Array.isArray(categoriesData.data) && categoriesData.data.length > 0) {
+                defaultCategoryId = categoriesData.data[0].id
+              }
+            }
+          } catch (e) {
+            console.warn('Could not load categories for default categoryId')
+          }
+          
+          // Transform database reports to diary format
+          const diariesFromDB = reports.map((report: any) => ({
+            id: report.id,
+            title: report.title,
+            categoryId: defaultCategoryId, // Use first available category
+            status: 'completed' as const,
+            createdDate: new Date(report.createdAt).toISOString().split('T')[0],
+            lastModified: new Date(report.lastModified).toISOString().split('T')[0]
+          }))
+          
+          setDiaries(diariesFromDB)
+          
+          // Also save to localStorage for backup
+          localStorage.setItem('diaries', JSON.stringify(diariesFromDB))
+        } else {
+          // Fallback to localStorage if database fails
+          const savedDiaries = localStorage.getItem('diaries')
+          if (savedDiaries) {
+            setDiaries(JSON.parse(savedDiaries))
+          }
+        }
+      } catch (error) {
+        console.error('Error loading diaries from database, falling back to localStorage:', error)
+        // Fallback to localStorage
+        const savedDiaries = localStorage.getItem('diaries')
+        if (savedDiaries) {
+          setDiaries(JSON.parse(savedDiaries))
+        }
       }
       
-      const savedConstructions = localStorage.getItem('constructions')
-      if (savedConstructions) {
-        setConstructions(JSON.parse(savedConstructions))
+      // Load other data from database APIs
+      try {
+        // Load projects from database
+        const projectsResponse = await fetch('/api/projects')
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json()
+          if (projectsData.success && Array.isArray(projectsData.data)) {
+            const projectsFromDB = projectsData.data.map((project: any) => ({
+              id: project.id,
+              name: project.name,
+              description: project.description || '',
+              status: project.status.toLowerCase() as 'active' | 'completed' | 'paused',
+              startDate: new Date(project.startDate).toISOString().split('T')[0],
+              endDate: project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : undefined,
+              manager: project.manager || 'N/A'
+            }))
+            setProjectGroups(projectsFromDB)
+            localStorage.setItem('projectGroups', JSON.stringify(projectsFromDB))
+          }
+        }
+        
+        // Load constructions from database
+        const constructionsResponse = await fetch('/api/constructions')
+        if (constructionsResponse.ok) {
+          const constructionsData = await constructionsResponse.json()
+          if (constructionsData.success && Array.isArray(constructionsData.data)) {
+            const constructionsFromDB = constructionsData.data.map((construction: any) => ({
+              id: construction.id,
+              name: construction.name,
+              location: construction.location || '',
+              status: construction.status.toLowerCase() as 'active' | 'completed' | 'paused',
+              startDate: new Date(construction.startDate).toISOString().split('T')[0],
+              endDate: construction.endDate ? new Date(construction.endDate).toISOString().split('T')[0] : undefined,
+              manager: construction.manager || 'N/A',
+              projectGroupId: construction.projectId
+            }))
+            setConstructions(constructionsFromDB)
+            localStorage.setItem('constructions', JSON.stringify(constructionsFromDB))
+          }
+        }
+        
+        // Load categories from database
+        const categoriesResponse = await fetch('/api/categories')
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json()
+          if (categoriesData.success && Array.isArray(categoriesData.data)) {
+            const categoriesFromDB = categoriesData.data.map((category: any) => ({
+              id: category.id,
+              name: category.name,
+              description: category.description || '',
+              constructionId: category.constructionId,
+              status: category.status.toLowerCase() as 'pending' | 'in-progress' | 'completed',
+              createdDate: new Date(category.createdAt).toISOString().split('T')[0]
+            }))
+            setCategories(categoriesFromDB)
+            localStorage.setItem('categories', JSON.stringify(categoriesFromDB))
+          }
+        }
+      } catch (error) {
+        console.error('Error loading data from database APIs, falling back to localStorage:', error)
+        // Fallback to localStorage
+        try {
+          const savedProjectGroups = localStorage.getItem('projectGroups')
+          if (savedProjectGroups) {
+            setProjectGroups(JSON.parse(savedProjectGroups))
+          }
+          
+          const savedConstructions = localStorage.getItem('constructions')
+          if (savedConstructions) {
+            setConstructions(JSON.parse(savedConstructions))
+          }
+          
+          const savedCategories = localStorage.getItem('categories')
+          if (savedCategories) {
+            setCategories(JSON.parse(savedCategories))
+          }
+        } catch (localStorageError) {
+          console.error('Error loading data from localStorage:', localStorageError)
+        }
       }
-      
-      const savedCategories = localStorage.getItem('categories')
-      if (savedCategories) {
-        setCategories(JSON.parse(savedCategories))
-      }
-      
-      const savedDiaries = localStorage.getItem('diaries')
-      if (savedDiaries) {
-        setDiaries(JSON.parse(savedDiaries))
-      }
-    } catch (error) {
-      console.error('Error loading data from localStorage:', error)
     }
+    
+    loadData()
   }, [])
 
   useEffect(() => {

@@ -415,13 +415,25 @@ export default function ImageGridEditor({
               value={headerContent}
               onChange={(e) => onHeaderContentChange?.(e.target.value)}
               placeholder="Nhập nội dung cho trang này..."
-              className="w-full h-20 p-3 border-2 border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:outline-none text-sm"
+              className="w-full h-20 p-3 border-2 border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:outline-none text-sm print:hidden"
               style={{
                 minHeight: '60px',
                 fontFamily: 'Arial, sans-serif'
               }}
             />
-            <div className="text-xs text-gray-500 mt-1 screen-only">
+            {/* PRINT VERSION - ALWAYS SHOW IN PRINT MODE */}
+            <div 
+              className="print-header-content"
+              style={{ 
+                fontFamily: 'Arial, sans-serif',
+                display: 'none'
+              }}
+              data-content={headerContent}
+              data-print-content="true"
+            >
+              {headerContent || "Chưa có nội dung"}
+            </div>
+            <div className="text-xs text-gray-500 mt-1 screen-only print:hidden">
               💡 Nội dung này chỉ áp dụng cho trang {pageNumber}
             </div>
           </div>
@@ -429,8 +441,10 @@ export default function ImageGridEditor({
           <div className="w-full">
             {headerContent ? (
               <div 
-                className="text-sm text-gray-800 whitespace-pre-wrap p-2 bg-gray-50 rounded border min-h-[60px] flex items-center justify-center"
+                className="header-content text-sm text-gray-800 whitespace-pre-wrap p-2 bg-gray-50 rounded border min-h-[60px] flex items-center justify-center"
                 style={{ fontFamily: 'Arial, sans-serif' }}
+                data-content={headerContent}
+                data-print-content="true"
               >
                 {headerContent}
               </div>

@@ -381,7 +381,7 @@ export default function ReportEditorPage() {
                     marginHeader: 45,
                     imageAspectRatio: "4:3",
                     centerHorizontally: false,
-                    headerContent: ""
+                    headerContent: "Hoạt động xây dựng"
                   }
                 }
               }
@@ -418,7 +418,7 @@ export default function ReportEditorPage() {
           marginHeader: 45,
           imageAspectRatio: "4:3",
           centerHorizontally: false,
-          headerContent: ""
+          headerContent: "Hoạt động xây dựng"
         }
       }))
     } else {
@@ -3563,7 +3563,7 @@ export default function ReportEditorPage() {
               marginHeader: marginHeader,
               imageAspectRatio: imageAspectRatio,
               centerHorizontally: centerHorizontally,
-              headerContent: ""
+              headerContent: "Hoạt động xây dựng"
             }
           }
           updated[pageNumber].images[slotIndex] = imageData
@@ -4126,7 +4126,7 @@ export default function ReportEditorPage() {
                         marginHeader: marginHeader,
                         imageAspectRatio: imageAspectRatio,
                         centerHorizontally: centerHorizontally,
-                        headerContent: ""
+                        headerContent: "Hoạt động xây dựng"
                       }
                     }
                     updated[currentPage].images[slotIndex] = imageData

@@ -414,7 +414,7 @@ export default function ImageGridEditor({
             <textarea
               value={headerContent}
               onChange={(e) => onHeaderContentChange?.(e.target.value)}
-              placeholder="Nhập nội dung cho trang này..."
+              placeholder="Hoạt động xây dựng"
               className="w-full h-20 p-3 border-2 border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:outline-none text-sm print:hidden"
               style={{
                 minHeight: '60px',

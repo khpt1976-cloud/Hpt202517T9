@@ -2768,6 +2768,13 @@ export default function ReportEditorPage() {
   }
 
   const handleActualPrint = () => {
+    // Đồng bộ nội dung hiện tại trước khi in
+    const currentContent = editorContent || ""
+    const updatedPagesContent = {
+      ...pagesContent,
+      [currentPage]: currentContent
+    }
+    
     // Tạo cửa sổ in mới với chỉ nội dung cần in
     const printWindow = window.open('', '_blank', 'width=800,height=600')
     
@@ -2971,7 +2978,7 @@ export default function ReportEditorPage() {
       
       // Thêm nội dung từng trang
       for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-        const pageContent = pagesContent[pageNum] || ""
+        const pageContent = updatedPagesContent[pageNum] || ""
         const hasImageConfig = imagePagesConfig[pageNum] && Object.keys(imagePagesConfig[pageNum]).length > 0
         
         printHTML += `
@@ -2984,7 +2991,27 @@ export default function ReportEditorPage() {
         `
         
         if (hasImageConfig) {
-          // Trang ảnh
+          // Trang ảnh - bao gồm cả text và ảnh
+          const headerContent = imagePagesConfig[pageNum]?.headerContent || ""
+          
+          // Thêm phần text nếu có
+          if (headerContent.trim()) {
+            printHTML += `
+              <div class="header-content" style="
+                margin-bottom: 15mm;
+                padding: 5mm;
+                font-family: Arial, sans-serif;
+                font-size: 12pt;
+                line-height: 1.4;
+                white-space: pre-wrap;
+                background-color: white;
+              ">
+                ${headerContent}
+              </div>
+            `
+          }
+          
+          // Thêm phần ảnh
           printHTML += '<div class="image-grid">'
           const images = imagePagesConfig[pageNum]?.images || []
           images.forEach((imageUrl, slotIndex) => {
@@ -4434,7 +4461,8 @@ export default function ReportEditorPage() {
                 {/* Render tất cả các trang */}
                 {Array.from({ length: totalPages }, (_, index) => {
                   const pageNum = index + 1
-                  const pageContent = pagesContent[pageNum] || ""
+                  // Sử dụng nội dung hiện tại nếu đang ở trang hiện tại, nếu không thì dùng pagesContent
+                  const pageContent = pageNum === currentPage ? (editorContent || "") : (pagesContent[pageNum] || "")
                   const hasImageConfig = imagePagesConfig[pageNum] && Object.keys(imagePagesConfig[pageNum]).length > 0
                   
                   return (
@@ -4447,46 +4475,64 @@ export default function ReportEditorPage() {
                       {/* Nội dung trang */}
                       <div className="page-content">
                         {hasImageConfig ? (
-                          /* Trang ảnh - COPY CHÍNH XÁC TỪ TRANG CHUẨN */
-                          <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(2, 70mm)',
-                            gridTemplateRows: 'repeat(2, 70mm)',
-                            gap: '5mm',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            justifyItems: 'center',
-                            alignContent: 'center',
-                            margin: '15mm 0'
-                          }}>
-                            {(imagePagesConfig[pageNum]?.images || []).map((imageUrl, slotIndex) => {
-                              if (!imageUrl) return null
-                              return (
-                                <div key={slotIndex} style={{
-                                  width: '70mm',
-                                  height: '70mm',
-                                  border: '4px solid #10b981',
-                                  borderRadius: '8px',
-                                  overflow: 'hidden',
-                                  backgroundColor: '#f0f9ff'
-                                }}>
-                                  <img 
-                                    src={imageUrl} 
-                                    alt={`Ảnh ${slotIndex + 1}`}
-                                    style={{
-                                      width: '100%',
-                                      height: '100%',
-                                      objectFit: 'cover',
-                                      borderRadius: '4px'
-                                    }}
-                                    onError={(e) => {
-                                      console.error('Image load error:', imageUrl)
-                                      e.currentTarget.style.display = 'none'
-                                    }}
-                                  />
-                                </div>
-                              )
-                            })}
+                          /* Trang ảnh - bao gồm cả text và ảnh */
+                          <div>
+                            {/* Hiển thị text nếu có */}
+                            {imagePagesConfig[pageNum]?.headerContent?.trim() && (
+                              <div style={{
+                                marginBottom: '15mm',
+                                padding: '5mm',
+                                fontFamily: 'Arial, sans-serif',
+                                fontSize: '12pt',
+                                lineHeight: '1.4',
+                                whiteSpace: 'pre-wrap',
+                                backgroundColor: 'white'
+                              }}>
+                                {imagePagesConfig[pageNum].headerContent}
+                              </div>
+                            )}
+                            
+                            {/* Hiển thị grid ảnh */}
+                            <div style={{
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(2, 70mm)',
+                              gridTemplateRows: 'repeat(2, 70mm)',
+                              gap: '5mm',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              justifyItems: 'center',
+                              alignContent: 'center',
+                              margin: '15mm 0'
+                            }}>
+                              {(imagePagesConfig[pageNum]?.images || []).map((imageUrl, slotIndex) => {
+                                if (!imageUrl) return null
+                                return (
+                                  <div key={slotIndex} style={{
+                                    width: '70mm',
+                                    height: '70mm',
+                                    border: '4px solid #10b981',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden',
+                                    backgroundColor: '#f0f9ff'
+                                  }}>
+                                    <img 
+                                      src={imageUrl} 
+                                      alt={`Ảnh ${slotIndex + 1}`}
+                                      style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        borderRadius: '4px'
+                                      }}
+                                      onError={(e) => {
+                                        console.error('Image load error:', imageUrl)
+                                        e.currentTarget.style.display = 'none'
+                                      }}
+                                    />
+                                  </div>
+                                )
+                              })}
+                            </div>
                           </div>
                         ) : (
                           /* Trang text */

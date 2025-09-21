@@ -1444,26 +1444,29 @@ export default function ReportEditorPage() {
   // KHÔI PHỤC: Load existing diaries for template selection
   const loadExistingDiaries = async () => {
     try {
-      console.log('📚 Loading existing diaries from API...')
-      const response = await fetch('/api/construction-reports')
+      console.log('📚 Loading library templates from API...')
+      const response = await fetch('/api/construction-files?type=library')
       const result = await response.json()
       
-      console.log('📚 API response:', result)
+      console.log('📚 Library API response:', result)
       
-      if (Array.isArray(result) && result.length > 0) {
-        // Filter out current report - show all other reports as potential templates
-        const availableDiaries = result.filter((report: any) =>
-          report.id !== reportId
-        )
-        setExistingDiaries(availableDiaries)
-        console.log('📚 Loaded existing diaries for template:', availableDiaries.length)
-        console.log('📚 Available diaries:', availableDiaries.map(d => ({ id: d.id, title: d.title, totalPages: d.totalPages })))
+      if (result && result.files && Array.isArray(result.files) && result.files.length > 0) {
+        // Map library files to diary format for dropdown
+        const libraryTemplates = result.files.map((file: any) => ({
+          id: file.id,
+          title: file.name,
+          totalPages: file.totalPages || 1,
+          isLibrary: true
+        }))
+        setExistingDiaries(libraryTemplates)
+        console.log('📚 Loaded library templates for dropdown:', libraryTemplates.length)
+        console.log('📚 Available templates:', libraryTemplates.map(d => ({ id: d.id, title: d.title, totalPages: d.totalPages })))
       } else {
-        console.log('📚 No diaries found or invalid response format')
+        console.log('📚 No library templates found or invalid response format')
         setExistingDiaries([])
       }
     } catch (error) {
-      console.error('Error loading existing diaries:', error)
+      console.error('Error loading library templates:', error)
       setExistingDiaries([])
     }
   }
@@ -4599,12 +4602,18 @@ export default function ReportEditorPage() {
                     <SelectContent className="bg-slate-700 border-slate-600">
                       {existingDiaries.map((diary) => (
                         <SelectItem key={diary.id} value={diary.id} className="text-white hover:bg-slate-600">
-                          {diary.title} ({diary.totalPages || 1} trang)
+                          <div className="flex items-center gap-2">
+                            <span>{diary.title}</span>
+                            {diary.isLibrary && (
+                              <span className="text-xs bg-blue-500 text-white px-1 rounded">Thư viện</span>
+                            )}
+                            <span className="text-gray-400">({diary.totalPages || 1} trang)</span>
+                          </div>
                         </SelectItem>
                       ))}
                       {existingDiaries.length === 0 && (
                         <SelectItem value="no-diaries" disabled className="text-gray-400">
-                          Không có nhật ký nào khả dụng
+                          Không có template nào trong thư viện
                         </SelectItem>
                       )}
                     </SelectContent>

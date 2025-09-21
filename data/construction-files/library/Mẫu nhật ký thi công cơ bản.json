@@ -1,0 +1,15 @@
+{
+  "id": "lib-1758420530490",
+  "name": "Mẫu nhật ký thi công cơ bản",
+  "reportId": "rep-1758420444805",
+  "reportName": "Nhật ký thi công",
+  "totalPages": 1,
+  "currentPage": 1,
+  "pagesContent": {
+    "1": "<p>NHẬT K&Yacute; THI C&Ocirc;NG MẪU</p>\n<p>&nbsp;</p>\n<p>Ng&agrave;y: ___________</p>\n<p>Dự &aacute;n: ___________</p>\n<p>C&ocirc;ng việc thực hiện:</p>\n<p>- Đổ b&ecirc; t&ocirc;ng m&oacute;ng</p>\n<p>- Lắp đặt cốt th&eacute;p</p>\n<p>- Kiểm tra chất lượng</p>\n<p>&nbsp;</p>\n<p>Nh&acirc;n lực:</p>\n<p>- Thợ ch&iacute;nh: ___ người</p>\n<p>- Thợ phụ: ___ người</p>\n<p>&nbsp;</p>\n<p>Vật liệu sử dụng:</p>\n<p>- B&ecirc; t&ocirc;ng: ___ m&sup3;</p>\n<p>- Cốt th&eacute;p: ___ tấn</p>\n<p>&nbsp;</p>\n<p>Ghi ch&uacute;: ___________</p>"
+  },
+  "editorContent": "<p>NHẬT K&Yacute; THI C&Ocirc;NG MẪU</p>\n<p>&nbsp;</p>\n<p>Ng&agrave;y: ___________</p>\n<p>Dự &aacute;n: ___________</p>\n<p>C&ocirc;ng việc thực hiện:</p>\n<p>- Đổ b&ecirc; t&ocirc;ng m&oacute;ng</p>\n<p>- Lắp đặt cốt th&eacute;p</p>\n<p>- Kiểm tra chất lượng</p>\n<p>&nbsp;</p>\n<p>Nh&acirc;n lực:</p>\n<p>- Thợ ch&iacute;nh: ___ người</p>\n<p>- Thợ phụ: ___ người</p>\n<p>&nbsp;</p>\n<p>Vật liệu sử dụng:</p>\n<p>- B&ecirc; t&ocirc;ng: ___ m&sup3;</p>\n<p>- Cốt th&eacute;p: ___ tấn</p>\n<p>&nbsp;</p>\n<p>Ghi ch&uacute;: ___________</p>",
+  "createdAt": "2025-09-21T02:08:50.490Z",
+  "type": "library",
+  "savedAt": "2025-09-21T02:08:50.507Z"
+}

@@ -1,28 +1,22 @@
-      - name: Deploy to server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Di chuyển đến thư mục dự án
-            cd /var/www/Hpt202517T9
-            
-            # Lấy thông tin mới nhất từ GitHub
-            git fetch --all
-            
-            # Reset cứng về trạng thái của nhánh main trên GitHub
-            # Lệnh này sẽ ghi đè mọi thay đổi cục bộ, đảm bảo server luôn giống GitHub
-            git reset --hard origin/main
-            
-            # Cài đặt hoặc cập nhật các gói phụ thuộc
-            npm install
-            
-            # Đồng bộ cơ sở dữ liệu với schema
-            npx prisma db push
-            
-            # Build lại ứng dụng Next.js
-            npm run build
-            
-            # Khởi động lại ứng dụng bằng PM2 một cách mượt mà
-            pm2 reload Hpt202517T9
+script: |
+  # Di chuyển đến thư mục dự án
+  cd /var/www/Hpt202517T9
+  
+  # Lấy thông tin mới nhất từ GitHub
+  git fetch --all
+  
+  # Reset cứng về trạng thái của nhánh main trên GitHub
+  # Lệnh này sẽ ghi đè mọi thay đổi cục bộ, đảm bảo server luôn giống GitHub
+  git reset --hard origin/main
+  
+  # Cài đặt hoặc cập nhật các gói phụ thuộc
+  npm install
+  
+  # Đồng bộ cơ sở dữ liệu với schema
+  npx prisma db push
+  
+  # Build lại ứng dụng Next.js
+  npm run build
+  
+  # Khởi động lại ứng dụng bằng PM2 một cách mượt mà
+  pm2 reload Hpt202517T9

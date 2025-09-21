@@ -15,10 +15,10 @@ jobs:
 
       - name: Debug Secrets
         run: |
-          echo "Host Secret (first 5 chars): ${{ secrets.SSH_HOST:0:5 }}"
-          echo "Username Secret (first 5 chars): ${{ secrets.SSH_USERNAME:0:5 }}"
-          echo "Private Key (first 20 and last 20 chars):"
-          echo "${{ secrets.SSH_PRIVATE_KEY:0:20 }}...${{ secrets.SSH_PRIVATE_KEY: -20}}"
+          echo "Host Secret (first 5 chars): ${{ secrets.SSH_HOST && secrets.SSH_HOST:0:5 || '' }}"
+          echo "Username Secret (first 5 chars): ${{ secrets.SSH_USERNAME && secrets.SSH_USERNAME:0:5 || '' }}"
+          echo "Private Key (first 20 chars): ${{ secrets.SSH_PRIVATE_KEY && secrets.SSH_PRIVATE_KEY:0:20 || '' }}"
+          echo "Private Key (last 20 chars): ${{ secrets.SSH_PRIVATE_KEY && secrets.SSH_PRIVATE_KEY: -20 || '' }}"
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master

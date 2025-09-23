@@ -298,7 +298,7 @@ export default function ConstructionDiarysPage() {
   const filteredCategories = categories.filter((category) => category.constructionId === selectedConstruction?.id)
   const filteredDiarys = diaries.filter((diary) => diary.categoryId === selectedCategory?.id)
 
-  const handleCreateProjectGroup = () => {
+  const handleCreateProjectGroup = async () => {
     const errors: { [key: string]: string } = {}
 
     if (!newProjectGroup.name.trim()) errors.name = "Tên dự án là bắt buộc"
@@ -310,22 +310,56 @@ export default function ConstructionDiarysPage() {
     }
 
     setProjectGroupErrors({})
-    const projectGroup: ProjectGroup = {
-      id: `pg-${Date.now()}`,
-      name: newProjectGroup.name,
-      description: newProjectGroup.description,
-      manager: newProjectGroup.manager,
-      status: newProjectGroup.status,
-      startDate: new Date().toISOString().split("T")[0],
-    }
+    
+    try {
+      // Call API to create project on server
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newProjectGroup.name,
+          description: newProjectGroup.description,
+          manager: newProjectGroup.manager,
+          status: newProjectGroup.status.toUpperCase(),
+          start_date: new Date().toISOString(),
+        }),
+      })
 
-    setProjectGroups((prev) => {
-      const newProjectGroups = [...prev, projectGroup]
-      localStorage.setItem("projectGroups", JSON.stringify(newProjectGroups))
-      return newProjectGroups
-    })
-    setNewProjectGroup({ name: "", description: "", manager: "", status: "active" })
-    setShowCreateProjectGroup(false)
+      const result = await response.json()
+
+      if (result.success) {
+        // Transform the response to match frontend format
+        const projectGroup: ProjectGroup = {
+          id: result.data.id,
+          name: result.data.name,
+          description: result.data.description || '',
+          manager: result.data.manager || 'N/A',
+          status: result.data.status.toLowerCase() as 'active' | 'completed' | 'paused',
+          startDate: new Date(result.data.startDate).toISOString().split('T')[0],
+          endDate: result.data.endDate ? new Date(result.data.endDate).toISOString().split('T')[0] : undefined,
+        }
+
+        // Add to local state only after successful API call
+        setProjectGroups((prev) => {
+          const newProjectGroups = [...prev, projectGroup]
+          localStorage.setItem("projectGroups", JSON.stringify(newProjectGroups))
+          return newProjectGroups
+        })
+        
+        setNewProjectGroup({ name: "", description: "", manager: "", status: "active" })
+        setShowCreateProjectGroup(false)
+        
+        console.log('✅ Project created successfully on server and local state')
+      } else {
+        console.error('❌ Failed to create project on server:', result.error)
+        alert(`Lỗi tạo dự án: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('❌ Error calling create API:', error)
+      alert('Có lỗi xảy ra khi tạo dự án. Vui lòng thử lại.')
+    }
   }
 
   const handleCreateConstruction = () => {
@@ -1332,46 +1366,146 @@ export default function ConstructionDiarysPage() {
     setShowEditProjectGroup(true)
   }
 
+  // Function to refresh all data from database
+  const refreshDataFromDatabase = async () => {
+    try {
+      // Load projects from database
+      const projectsResponse = await fetch('/api/projects')
+      if (projectsResponse.ok) {
+        const projectsData = await projectsResponse.json()
+        if (projectsData.success && Array.isArray(projectsData.data)) {
+          const projectsFromDB = projectsData.data.map((project: any) => ({
+            id: project.id,
+            name: project.name,
+            description: project.description || '',
+            status: project.status.toLowerCase() as 'active' | 'completed' | 'paused',
+            startDate: new Date(project.startDate).toISOString().split('T')[0],
+            endDate: project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : undefined,
+            manager: project.manager || 'N/A'
+          }))
+          setProjectGroups(projectsFromDB)
+          localStorage.setItem('projectGroups', JSON.stringify(projectsFromDB))
+        }
+      }
+      
+      // Load constructions from database
+      const constructionsResponse = await fetch('/api/constructions')
+      if (constructionsResponse.ok) {
+        const constructionsData = await constructionsResponse.json()
+        if (constructionsData.success && Array.isArray(constructionsData.data)) {
+          const constructionsFromDB = constructionsData.data.map((construction: any) => ({
+            id: construction.id,
+            name: construction.name,
+            location: construction.location || '',
+            status: construction.status.toLowerCase() as 'active' | 'completed' | 'paused',
+            startDate: new Date(construction.startDate).toISOString().split('T')[0],
+            endDate: construction.endDate ? new Date(construction.endDate).toISOString().split('T')[0] : undefined,
+            manager: construction.manager || 'N/A',
+            projectGroupId: construction.projectId
+          }))
+          setConstructions(constructionsFromDB)
+          localStorage.setItem('constructions', JSON.stringify(constructionsFromDB))
+        }
+      }
+      
+      // Load categories from database
+      const categoriesResponse = await fetch('/api/categories')
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json()
+        if (categoriesData.success && Array.isArray(categoriesData.data)) {
+          const categoriesFromDB = categoriesData.data.map((category: any) => ({
+            id: category.id,
+            name: category.name,
+            description: category.description || '',
+            constructionId: category.constructionId,
+            status: category.status.toLowerCase() as 'pending' | 'in-progress' | 'completed',
+            createdDate: new Date(category.createdAt).toISOString().split('T')[0]
+          }))
+          setCategories(categoriesFromDB)
+          localStorage.setItem('categories', JSON.stringify(categoriesFromDB))
+        }
+      }
+      
+      // Load diaries from database
+      const response = await fetch('/api/construction-reports')
+      if (response.ok) {
+        const reports = await response.json()
+        
+        // Get first available category as default
+        let defaultCategoryId = 'default-category'
+        try {
+          const categoriesResponse = await fetch('/api/categories')
+          if (categoriesResponse.ok) {
+            const categoriesData = await categoriesResponse.json()
+            if (categoriesData.success && Array.isArray(categoriesData.data) && categoriesData.data.length > 0) {
+              defaultCategoryId = categoriesData.data[0].id
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load categories for default categoryId')
+        }
+        
+        // Transform database reports to diary format
+        const diariesFromDB = reports.map((report: any) => ({
+          id: report.id,
+          title: report.title,
+          categoryId: defaultCategoryId,
+          status: 'completed' as const,
+          createdDate: new Date(report.createdAt).toISOString().split('T')[0],
+          lastModified: new Date(report.lastModified).toISOString().split('T')[0]
+        }))
+        
+        setDiaries(diariesFromDB)
+        localStorage.setItem('diaries', JSON.stringify(diariesFromDB))
+      }
+    } catch (error) {
+      console.error('Error refreshing data from database:', error)
+    }
+  }
+
   const handleDeleteProjectGroup = (projectGroupId: string) => {
     setProjectGroupToDelete(projectGroupId)
     setShowDeleteProjectGroupDialog(true)
   }
 
-  const confirmDeleteProjectGroup = () => {
+  const confirmDeleteProjectGroup = async () => {
     if (projectGroupToDelete) {
-      setProjectGroups((prev) => {
-        const newProjectGroups = prev.filter((pg) => pg.id !== projectGroupToDelete)
-        localStorage.setItem("projectGroups", JSON.stringify(newProjectGroups))
-        return newProjectGroups
-      })
-      // Delete all related constructions, categories, and diaries
-      setConstructions((prev) => {
-        const newConstructions = prev.filter((c) => c.projectGroupId !== projectGroupToDelete)
-        localStorage.setItem("constructions", JSON.stringify(newConstructions))
-        return newConstructions
-      })
-      setCategories((prev) => {
-        const newCategories = prev.filter((cat) => {
-          const construction = constructions.find((c) => c.id === cat.constructionId)
-          return construction?.projectGroupId !== projectGroupToDelete
+      try {
+        // Call API to delete project from server
+        const response = await fetch(`/api/projects/${projectGroupToDelete}`, {
+          method: 'DELETE',
         })
-        localStorage.setItem("categories", JSON.stringify(newCategories))
-        return newCategories
-      })
-      setDiaries((prev) => {
-        const newDiaries = prev.filter((r) => {
-          const category = categories.find((cat) => cat.id === r.categoryId)
-          const construction = constructions.find((c) => c.id === category?.constructionId)
-          return construction?.projectGroupId !== projectGroupToDelete
-        })
-        localStorage.setItem("diaries", JSON.stringify(newDiaries))
-        return newDiaries
-      })
-      if (selectedProjectGroup?.id === projectGroupToDelete) {
-        setSelectedProjectGroup(null)
-        setSelectedConstruction(null)
-        setSelectedCategory(null)
+
+        const result = await response.json()
+
+        if (result.success) {
+          // Remove from local state only after successful API call
+          setProjectGroups((prev) => {
+            const newProjectGroups = prev.filter((pg) => pg.id !== projectGroupToDelete)
+            localStorage.setItem("projectGroups", JSON.stringify(newProjectGroups))
+            return newProjectGroups
+          })
+          
+          // Since we're using cascade delete in the database, we need to refresh all data
+          // to ensure consistency between frontend and backend
+          await refreshDataFromDatabase()
+          
+          if (selectedProjectGroup?.id === projectGroupToDelete) {
+            setSelectedProjectGroup(null)
+            setSelectedConstruction(null)
+            setSelectedCategory(null)
+          }
+          
+          console.log('✅ Project deleted successfully from server and local state')
+        } else {
+          console.error('❌ Failed to delete project from server:', result.error)
+          alert(`Lỗi xóa dự án: ${result.error}`)
+        }
+      } catch (error) {
+        console.error('❌ Error calling delete API:', error)
+        alert('Có lỗi xảy ra khi xóa dự án. Vui lòng thử lại.')
       }
+      
       setProjectGroupToDelete(null)
     }
     setShowDeleteProjectGroupDialog(false)

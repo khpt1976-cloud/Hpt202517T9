@@ -106,12 +106,7 @@ export async function DELETE(
   try {
     // Check if project exists
     const existingProject = await prisma.project.findUnique({
-      where: { id: params.id },
-      include: {
-        _count: {
-          select: { constructions: true }
-        }
-      }
+      where: { id: params.id }
     })
     
     if (!existingProject) {
@@ -121,21 +116,15 @@ export async function DELETE(
       )
     }
     
-    // Check if project has constructions
-    if (existingProject._count.constructions > 0) {
-      return NextResponse.json(
-        { success: false, error: 'Cannot delete project with existing constructions' },
-        { status: 400 }
-      )
-    }
-    
+    // Delete project - Prisma will handle cascade deletion of related records
+    // (constructions, categories, reports, report pages, report images, permissions)
     await prisma.project.delete({
       where: { id: params.id }
     })
     
     return NextResponse.json({
       success: true,
-      message: 'Project deleted successfully'
+      message: 'Project and all related data deleted successfully'
     })
   } catch (error) {
     console.error('Error deleting project:', error)
